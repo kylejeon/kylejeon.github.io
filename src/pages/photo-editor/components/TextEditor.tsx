@@ -73,8 +73,9 @@ export default function TextEditor({ texts, onUpdateText, onDeleteText }: TextEd
               onChange={(e) => onUpdateText(text.id, { text: e.target.value })}
               className="w-full px-2 py-1 text-sm border border-gray-300 rounded"
               style={{ 
-                fontFamily: text.fontFamily,
-                fontVariantEmoji: 'emoji'
+                fontFamily: `"${text.fontFamily}", "Noto Sans KR", sans-serif`,
+                fontVariantEmoji: 'emoji',
+                letterSpacing: 'normal'
               }}
             />
           </div>
@@ -123,10 +124,12 @@ export default function TextEditor({ texts, onUpdateText, onDeleteText }: TextEd
             <div 
               className="w-full px-2 py-2 text-sm border border-gray-200 rounded bg-white"
               style={{ 
-                fontFamily: text.fontFamily,
+                fontFamily: `"${text.fontFamily}", "Noto Sans KR", sans-serif`,
                 fontSize: `${Math.min(text.fontSize, 16)}px`,
                 color: text.color,
-                fontVariantEmoji: 'emoji'
+                fontVariantEmoji: 'emoji',
+                letterSpacing: 'normal',
+                wordSpacing: 'normal'
               }}
             >
               {text.text || '텍스트를 입력하세요'}

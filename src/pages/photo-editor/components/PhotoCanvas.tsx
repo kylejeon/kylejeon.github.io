@@ -236,10 +236,16 @@ const PhotoCanvas = forwardRef<HTMLCanvasElement, PhotoCanvasProps>(({
 
         ctx.translate(x, y);
 
-        // 폰트 설정 - 한글 폰트를 우선으로 설정
-        const fontFamily = text.fontFamily === 'Arial' || text.fontFamily === 'serif' || text.fontFamily === 'sans-serif' 
-          ? `"Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", ${text.fontFamily}` 
-          : `"${text.fontFamily}", "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", "Malgun Gothic", sans-serif`;
+        // 폰트 설정 - 한글 폰트 우선 적용
+        let fontFamily = text.fontFamily;
+        
+        // 기본 폰트인 경우 이모지 폰트만 추가
+        if (text.fontFamily === 'Arial' || text.fontFamily === 'Helvetica' || text.fontFamily === 'serif' || text.fontFamily === 'sans-serif') {
+          fontFamily = `${text.fontFamily}, "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji"`;
+        } else {
+          // 한글 폰트인 경우 폰트명을 정확히 지정하고 fallback 추가
+          fontFamily = `"${text.fontFamily}", "Noto Sans KR", "Malgun Gothic", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji"`;
+        }
 
         if (isHorizontalMode) {
           // 세로 텍스트 (가로 모드에서)
@@ -262,6 +268,10 @@ const PhotoCanvas = forwardRef<HTMLCanvasElement, PhotoCanvasProps>(({
           ctx.fillStyle = text.color;
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
+          
+          // 텍스트 렌더링 품질 향상
+          ctx.textRendering = 'optimizeLegibility' as any;
+          
           ctx.fillText(text.text, 0, 0);
         }
 
