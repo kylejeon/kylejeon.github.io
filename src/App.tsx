@@ -3,7 +3,7 @@ import { AppRoutes } from './router'
 
 function App() {
   return (
-    <BrowserRouter basename="/ouyestudio">
+    <BrowserRouter basename="/">
       <AppRoutes />
     </BrowserRouter>
   )
