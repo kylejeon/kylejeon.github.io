@@ -178,12 +178,30 @@ const PhotoCanvas = forwardRef<HTMLCanvasElement, PhotoCanvasProps>(({
       if (showGuides) {
         ctx.strokeStyle = '#e5e7eb';
         ctx.lineWidth = 2;
-        layout.slots.forEach((slot) => {
+        layout.slots.forEach((slot, index) => {
           const x = slot.x * CANVAS_WIDTH;
           const y = slot.y * CANVAS_HEIGHT;
           const width = slot.width * CANVAS_WIDTH;
           const height = slot.height * CANVAS_HEIGHT;
           ctx.strokeRect(x, y, width, height);
+
+          // 해당 슬롯에 사진이 없으면 번호 표시
+          const hasPhoto = photos.some(photo => 
+            photo.slotX === slot.x && 
+            photo.slotY === slot.y && 
+            photo.slotWidth === slot.width && 
+            photo.slotHeight === slot.height
+          );
+
+          if (!hasPhoto) {
+            ctx.save();
+            ctx.fillStyle = '#9ca3af';
+            ctx.font = `${Math.min(width, height) * 0.15}px "Noto Sans KR", sans-serif`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(`사진 ${index + 1}`, x + width / 2, y + height / 2);
+            ctx.restore();
+          }
         });
       }
 
