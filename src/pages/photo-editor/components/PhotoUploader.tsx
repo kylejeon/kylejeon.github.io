@@ -1,4 +1,5 @@
 
+
 import { useRef } from 'react';
 
 interface PhotoUploaderProps {
@@ -25,6 +26,11 @@ export default function PhotoUploader({ onUpload }: PhotoUploaderProps) {
 
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
+    e.stopPropagation();
+    // 업로드 영역에서는 복사 커서 표시
+    if (e.dataTransfer) {
+      e.dataTransfer.dropEffect = 'copy';
+    }
   };
 
   const handleClick = () => {
@@ -67,3 +73,4 @@ export default function PhotoUploader({ onUpload }: PhotoUploaderProps) {
     </div>
   );
 }
+

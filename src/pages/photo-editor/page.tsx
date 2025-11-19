@@ -95,6 +95,7 @@ export default function PhotoEditor() {
   const [texts, setTexts] = useState<TextItem[]>([]);
   const [selectedLayout, setSelectedLayout] = useState<LayoutTemplate>(layouts[0]);
   const [isTextMode, setIsTextMode] = useState(false);
+  const [isDraggingFile, setIsDraggingFile] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const handlePhotoUpload = useCallback(
@@ -340,6 +341,96 @@ export default function PhotoEditor() {
 
   const handleDeletePhoto = useCallback((id: string) => {
     setPhotos((prev) => prev.filter((photo) => photo.id !== id));
+  }, []);
+
+  const handleMovePhotoUp = useCallback((id: string) => {
+    setPhotos((prev) => {
+      const sortedPhotos = [...prev].sort((a, b) => {
+        if (Math.abs(a.slotY - b.slotY) < 0.01) {
+          return a.slotX - b.slotX;
+        }
+        return a.slotY - b.slotY;
+      });
+      
+      const currentIndex = sortedPhotos.findIndex((p) => p.id === id);
+      if (currentIndex <= 0) return prev;
+      
+      const targetPhoto = sortedPhotos[currentIndex];
+      const swapPhoto = sortedPhotos[currentIndex - 1];
+      
+      // 슬롯 위치 교환
+      const tempSlotX = targetPhoto.slotX;
+      const tempSlotY = targetPhoto.slotY;
+      const tempSlotWidth = targetPhoto.slotWidth;
+      const tempSlotHeight = targetPhoto.slotHeight;
+      
+      return prev.map((photo) => {
+        if (photo.id === targetPhoto.id) {
+          return {
+            ...photo,
+            slotX: swapPhoto.slotX,
+            slotY: swapPhoto.slotY,
+            slotWidth: swapPhoto.slotWidth,
+            slotHeight: swapPhoto.slotHeight,
+          };
+        }
+        if (photo.id === swapPhoto.id) {
+          return {
+            ...photo,
+            slotX: tempSlotX,
+            slotY: tempSlotY,
+            slotWidth: tempSlotWidth,
+            slotHeight: tempSlotHeight,
+          };
+        }
+        return photo;
+      });
+    });
+  }, []);
+
+  const handleMovePhotoDown = useCallback((id: string) => {
+    setPhotos((prev) => {
+      const sortedPhotos = [...prev].sort((a, b) => {
+        if (Math.abs(a.slotY - b.slotY) < 0.01) {
+          return a.slotX - b.slotX;
+        }
+        return a.slotY - b.slotY;
+      });
+      
+      const currentIndex = sortedPhotos.findIndex((p) => p.id === id);
+      if (currentIndex < 0 || currentIndex >= sortedPhotos.length - 1) return prev;
+      
+      const targetPhoto = sortedPhotos[currentIndex];
+      const swapPhoto = sortedPhotos[currentIndex + 1];
+      
+      // 슬롯 위치 교환
+      const tempSlotX = targetPhoto.slotX;
+      const tempSlotY = targetPhoto.slotY;
+      const tempSlotWidth = targetPhoto.slotWidth;
+      const tempSlotHeight = targetPhoto.slotHeight;
+      
+      return prev.map((photo) => {
+        if (photo.id === targetPhoto.id) {
+          return {
+            ...photo,
+            slotX: swapPhoto.slotX,
+            slotY: swapPhoto.slotY,
+            slotWidth: swapPhoto.slotWidth,
+            slotHeight: swapPhoto.slotHeight,
+          };
+        }
+        if (photo.id === swapPhoto.id) {
+          return {
+            ...photo,
+            slotX: tempSlotX,
+            slotY: tempSlotY,
+            slotWidth: tempSlotWidth,
+            slotHeight: tempSlotHeight,
+          };
+        }
+        return photo;
+      });
+    });
   }, []);
 
   const handleDeleteText = useCallback((id: string) => {
@@ -712,10 +803,68 @@ export default function PhotoEditor() {
     } catch (e) {
       console.error('AdSense error:', e);
     }
+
+    // 페이지 전체에서 드래그 앤 드롭 기본 동작 방지
+    const preventDefaults = (e: DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+    };
+
+    // 드래그 시작 감지
+    const handleDragEnter = (e: DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      
+      // 파일이 드래그되고 있는지 확인
+      if (e.dataTransfer?.types.includes('Files')) {
+        setIsDraggingFile(true);
+      }
+    };
+
+    // 드래그 종료 감지
+    const handleDragLeave = (e: DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      
+      // 페이지를 완전히 벗어났을 때만 상태 변경
+      if (e.target === document.body || e.target === document.documentElement) {
+        setIsDraggingFile(false);
+      }
+    };
+
+    // 드롭 시 상태 초기화
+    const handleDrop = (e: DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setIsDraggingFile(false);
+    };
+
+    // 드래그 오버 시 커서 변경
+    const handleDragOver = (e: DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      // 업로드 영역이 아닌 곳에서는 금지 커서 표시
+      if (e.dataTransfer) {
+        e.dataTransfer.dropEffect = 'none';
+      }
+    };
+
+    // 이벤트 리스너 등록
+    window.addEventListener('dragenter', handleDragEnter);
+    window.addEventListener('dragleave', handleDragLeave);
+    window.addEventListener('dragover', handleDragOver);
+    window.addEventListener('drop', handleDrop);
+
+    return () => {
+      window.removeEventListener('dragenter', handleDragEnter);
+      window.removeEventListener('dragleave', handleDragLeave);
+      window.removeEventListener('dragover', handleDragOver);
+      window.removeEventListener('drop', handleDrop);
+    };
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50" style={{ cursor: isDraggingFile ? 'not-allowed' : 'default' }}>
       {/* 헤더 */}
       <header className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 py-4">
@@ -828,10 +977,34 @@ export default function PhotoEditor() {
                         }
                         return a.slotY - b.slotY;
                       })
-                      .map((photo, index) => (
+                      .map((photo, index, sortedArray) => (
                         <div key={photo.id} className="flex items-center justify-between p-2 bg-gray-50 rounded">
                           <span className="text-sm text-gray-600">사진 {index + 1}</span>
                           <div className="flex items-center space-x-2">
+                            <button
+                              onClick={() => handleMovePhotoUp(photo.id)}
+                              disabled={index === 0}
+                              className={`${
+                                index === 0
+                                  ? 'text-gray-300 cursor-not-allowed'
+                                  : 'text-gray-600 hover:text-gray-800 cursor-pointer'
+                              }`}
+                              title="위로 이동"
+                            >
+                              <i className="ri-arrow-up-line"></i>
+                            </button>
+                            <button
+                              onClick={() => handleMovePhotoDown(photo.id)}
+                              disabled={index === sortedArray.length - 1}
+                              className={`${
+                                index === sortedArray.length - 1
+                                  ? 'text-gray-300 cursor-not-allowed'
+                                  : 'text-gray-600 hover:text-gray-800 cursor-pointer'
+                              }`}
+                              title="아래로 이동"
+                            >
+                              <i className="ri-arrow-down-line"></i>
+                            </button>
                             <button
                               onClick={() => handleUpdatePhoto(photo.id, { scale: photo.scale + 0.01 })}
                               className="text-blue-500 hover:text-blue-700 cursor-pointer"
