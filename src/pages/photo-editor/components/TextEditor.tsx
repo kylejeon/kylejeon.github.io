@@ -118,24 +118,6 @@ export default function TextEditor({ texts, onUpdateText, onDeleteText }: TextEd
             </select>
           </div>
           
-          {/* 폰트 미리보기 */}
-          <div>
-            <label className="block text-xs text-gray-600 mb-1">미리보기</label>
-            <div 
-              className="w-full px-2 py-2 text-sm border border-gray-200 rounded bg-white"
-              style={{ 
-                fontFamily: `"${text.fontFamily}", "Noto Sans KR", sans-serif`,
-                fontSize: `${Math.min(text.fontSize, 16)}px`,
-                color: text.color,
-                fontVariantEmoji: 'emoji',
-                letterSpacing: 'normal',
-                wordSpacing: 'normal'
-              }}
-            >
-              {text.text || '텍스트를 입력하세요'}
-            </div>
-          </div>
-          
           {/* 크기 */}
           <div>
             <label className="block text-xs text-gray-600 mb-1">크기: {text.fontSize}px</label>
