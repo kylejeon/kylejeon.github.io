@@ -958,6 +958,31 @@ export default function PhotoEditor() {
                 />
               </div>
             </div>
+            
+            {/* 드래그 앤 드롭 안내 */}
+            <div className="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <div className="flex items-start space-x-3">
+                <div className="w-6 h-6 flex items-center justify-center">
+                  <i className="ri-information-line text-blue-600 text-xl"></i>
+                </div>
+                <p className="text-sm text-blue-800">
+                  사진 폴더에서 사진을 드래그 해서 <strong>[사진 업로드]</strong> 영역에 드랍하세요~!
+                </p>
+              </div>
+            </div>
+
+            {/* 예약 버튼 */}
+            <div className="mt-4 text-center">
+              <a
+                href="https://map.naver.com/p/entry/place/1433229063?lng=126.7268032&lat=37.5158605&placePath=/ticket?bookingRedirectUrl=https://m.booking.naver.com/booking/6/bizes/1144347&theme=place&entry=pll&lang=ko&entry=pll&from=map&fromPanelNum=1&additionalHeight=76&timestamp=202511191247&locale=ko&svcName=map_pcv5&theme=place&entry=pll&lang=ko&from=map&fromPanelNum=1&additionalHeight=76&timestamp=202511191247&locale=ko&svcName=map_pcv5&area=pll&c=15.00,0,0,0,dh"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold rounded-xl transition-all shadow-lg hover:shadow-xl whitespace-nowrap cursor-pointer"
+              >
+                <i className="ri-calendar-check-line mr-2 text-xl"></i>
+                오우예 셀프스튜디오 예약하러가기!
+              </a>
+            </div>
           </div>
 
           {/* 오른쪽 편집 패널 */}
