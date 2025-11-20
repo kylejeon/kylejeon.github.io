@@ -1,15 +1,14 @@
 
-import { RouteObject } from 'react-router-dom';
+import { RouteObject, Navigate } from 'react-router-dom';
 import { lazy } from 'react';
 
-const Home = lazy(() => import('../pages/home/page'));
 const PhotoEditor = lazy(() => import('../pages/photo-editor/page'));
 const NotFound = lazy(() => import('../pages/NotFound'));
 
 const routes: RouteObject[] = [
   {
     path: '/',
-    element: <Home />,
+    element: <Navigate to="/photo-editor" replace />,
   },
   {
     path: '/photo-editor',
